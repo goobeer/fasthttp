@@ -747,9 +747,10 @@ func SaveMultipartFile(fh *multipart.FileHeader, path string) error {
 	}
 	defer f.Close()
 
-	if ff, ok := f.(*os.File); ok {
-		return os.Rename(ff.Name(), path)
-	}
+	//Fixed bug
+	//	if ff, ok := f.(*os.File); ok {
+	//		return os.Rename(ff.Name(), path)
+	//	}
 
 	ff, err := os.Create(path)
 	if err != nil {
