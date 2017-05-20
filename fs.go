@@ -288,12 +288,13 @@ const FSHandlerCacheDuration = 10 * time.Second
 // Do not create multiple request handler instances for the same
 // (root, stripSlashes) arguments - just reuse a single instance.
 // Otherwise goroutine leak will occur.
-func FSHandler(root string, stripSlashes int) RequestHandler {
+func FSHandler(root string, stripSlashes int, compressed bool) RequestHandler {
 	fs := &FS{
 		Root:               root,
 		IndexNames:         []string{"index.html"},
 		GenerateIndexPages: true,
 		AcceptByteRange:    true,
+		Compress:           compressed,
 	}
 	if stripSlashes > 0 {
 		fs.PathRewrite = NewPathSlashesStripper(stripSlashes)
@@ -717,6 +718,7 @@ func (h *fsHandler) handleRequest(ctx *RequestCtx) {
 			mustCompress = false
 			ff, err = h.openFSFile(filePath, mustCompress)
 		}
+
 		if err == errDirIndexRequired {
 			ff, err = h.openIndexFile(ctx, filePath, mustCompress)
 			if err != nil {
